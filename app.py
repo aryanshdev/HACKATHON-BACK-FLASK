@@ -43,3 +43,4 @@ def deleteCol():
         return flask.session['current'].clearCol(flask.request.form['col'])
     else:
         return ({'message': 'No file uploaded yet!'})
+

@@ -6,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 # Takes in path, returns df and message
-def createDataFrame(path):
+def createDataFrame(path,code):
 
     file_extension = os.path.splitext(path)[1]
     df=None
@@ -24,7 +24,7 @@ def createDataFrame(path):
         message= "Unsupported File extension, please input csv, xlsx or xls file type."
         status="err"
 
-    save_dataframe_to_csv(df)
+    save_dataframe_to_csv(df,code)
     data = df.to_json(orient='records')
     result = {
         'data': data,
@@ -34,7 +34,7 @@ def createDataFrame(path):
     return result
 
 # takes df param and gives back df and a message
-def clean_column_names(path):
+def clean_column_names(path,code):
     df =pd.read_csv(path)
     # Original column names
     original_columns = df.columns.tolist()
@@ -59,7 +59,7 @@ def clean_column_names(path):
         message = "No changes to column names."
         status="succ"
 
-    save_dataframe_to_csv(df)
+    save_dataframe_to_csv(df,code)
     data = df.to_json(orient='records')
     result = {
         'data': data,
@@ -69,7 +69,7 @@ def clean_column_names(path):
     return result
     
 # Takes in the dataframe and a String of the columns to be dropped; seperated by comma, returns df and message
-def drop_columns_from_string(path, column_string):
+def drop_columns_from_string(path, column_string,code):
     df =pd.read_csv(path)
     # Split the string by commas and trim whitespace
     columns_to_drop = [col.strip() for col in column_string.split(',')]
@@ -102,7 +102,7 @@ def drop_columns_from_string(path, column_string):
         message = "No columns were dropped."
         status="succ"
     
-    save_dataframe_to_csv(df_dropped)
+    save_dataframe_to_csv(df_dropped,code)
     data = df_dropped.to_json(orient='records')
     result = {
         'data': data,
@@ -113,7 +113,7 @@ def drop_columns_from_string(path, column_string):
   
 
 # Removes duplicate rows and returns message as such.
-def remove_duplicates(path):
+def remove_duplicates(path,code):
     df =pd.read_csv(path)
     status=""
     # Check for duplicate rows
@@ -130,7 +130,7 @@ def remove_duplicates(path):
         message = "No duplicate rows found."
         status="succ"
 
-    save_dataframe_to_csv(df_cleaned)
+    save_dataframe_to_csv(df_cleaned,code)
     data = df_cleaned.to_json(orient='records')
     result = {
             'data': data,
@@ -165,7 +165,7 @@ def check_missing_values(path):
     return result
 
 # Takes df and column names of "NON-NUMERIC FIELDS", returns df and message
-def handle_nonnumeric_missing_vals_fill(path, columns):
+def handle_nonnumeric_missing_vals_fill(path, columns,code):
     df =pd.read_csv(path)
    
     columns_to_handle = [col.strip() for col in columns.split(',')]
@@ -186,7 +186,7 @@ def handle_nonnumeric_missing_vals_fill(path, columns):
             status="err"
     
     message = " ".join(messages)
-    save_dataframe_to_csv(df)
+    save_dataframe_to_csv(df,code)
     data = df.to_json(orient='records')
     result = {
             'data': data,
@@ -196,7 +196,7 @@ def handle_nonnumeric_missing_vals_fill(path, columns):
     return result
 
 # Takes df and column names of "NON-NUMERIC FIELDS", return df and message
-def handle_nonnumeric_missing_vals_drop(path, columns):
+def handle_nonnumeric_missing_vals_drop(path, columns,code):
     df =pd.read_csv(path)
     message=""
     status=""
@@ -225,7 +225,7 @@ def handle_nonnumeric_missing_vals_drop(path, columns):
     rows_dropped = initial_count - df.shape[0]
     message = f"Dropped {rows_dropped} rows where specified columns had missing values."
     status="succ"
-    save_dataframe_to_csv(df)
+    save_dataframe_to_csv(df,code)
     data = df.to_json(orient='records')
     result = {
             'data': data,
@@ -238,7 +238,7 @@ def handle_nonnumeric_missing_vals_drop(path, columns):
 
 
 # Takes df and column names of "NUMERIC FILEDS", returns df and message
-def handle_numeric_missing_vals(path, columns):
+def handle_numeric_missing_vals(path, columns,code):
     df =pd.read_csv(path)
 
     columns_to_handle = [col.strip() for col in columns.split(',')]
@@ -261,7 +261,7 @@ def handle_numeric_missing_vals(path, columns):
             status="err"
     
     message = " ".join(messages)
-    save_dataframe_to_csv(df)
+    save_dataframe_to_csv(df,code)
     data = df.to_json(orient='records')
     result = {
             'data': data,
@@ -272,7 +272,7 @@ def handle_numeric_missing_vals(path, columns):
 
 
 # Takes df and column names and returns df and message
-def convert_to_numeric(path, columns):
+def convert_to_numeric(path, columns,code):
     df =pd.read_csv(path)
     
     # Split the comma-separated string into a list of columns
@@ -304,7 +304,7 @@ def convert_to_numeric(path, columns):
     else:
         message = ' '.join(message)
     
-    save_dataframe_to_csv(df_converted)
+    save_dataframe_to_csv(df_converted,code)
     data = df_converted.to_json(orient='records')
     result = {
             'data': data,
@@ -314,17 +314,18 @@ def convert_to_numeric(path, columns):
 
     return result
 
+
 # Creates a file and returns back a custom message 
-def save_dataframe_to_csv(df):
+def save_dataframe_to_csv(df, code):
     try:
         # Save the DataFrame to 'clean.csv'
-        df.to_csv('clean.csv', index=False)
+        df.to_csv('./intermediates/'+code+'_clean.csv', index=False)
         return "File 'clean.csv' has been successfully created."
     except Exception as e:
         return f"An error occurred while creating the file 'clean.csv': {e}"
 
 # Normalize ONLY DATE values and returns df and custom message
-def normalize_date_column(path, date_column):
+def normalize_date_column(path, date_column,code):
     df =pd.read_csv(path)
   
     if date_column not in df.columns:
@@ -356,7 +357,7 @@ def normalize_date_column(path, date_column):
         scaler = MinMaxScaler(feature_range=(0, 1))
         df[[date_column]] = scaler.fit_transform(df[[date_column]])
 
-        save_dataframe_to_csv(df)
+        save_dataframe_to_csv(df,code)
         data = df.to_json(orient='records')
         message=f"Date column '{date_column}' normalized successfully."
         status="succ"
@@ -380,7 +381,7 @@ def normalize_date_column(path, date_column):
         return result
 
 # Input a df and target_col name and returns df and message
-def one_hot_encoding(path, target_column):
+def one_hot_encoding(path, target_column,code):
     df =pd.read_csv(path)
     
     # Check if target_column is in the DataFrame
@@ -431,7 +432,7 @@ def one_hot_encoding(path, target_column):
     
     # Add the target column back to the end
     df_encoded[target_column] = df_target.values  # Ensure proper alignment
-    save_dataframe_to_csv(df_encoded)
+    save_dataframe_to_csv(df_encoded,code)
     data = df_encoded.to_json(orient='records')
     message=f"One-Hot Encoding applied to columns: {', '.join(categorical_columns)}. Target column '{target_column}' is at the end."
     status="succ"
@@ -461,7 +462,7 @@ def get_column_datatypes(path):
 
 
 # takes in df, target_column String and returns df and message
-def drop_rows_without_target(path, target_column):
+def drop_rows_without_target(path, target_column,code):
     df =pd.read_csv(path)
  
     if target_column not in df.columns:
@@ -484,7 +485,7 @@ def drop_rows_without_target(path, target_column):
     # Count the number of rows dropped
     rows_dropped = f"Rows dropped count: {initial_count - df_cleaned.shape[0]}"
 
-    save_dataframe_to_csv(df_cleaned)
+    save_dataframe_to_csv(df_cleaned,code)
     data = df_cleaned.to_json(orient='records')
     message=rows_dropped
     status="succ"

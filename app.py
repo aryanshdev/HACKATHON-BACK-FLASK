@@ -1,20 +1,25 @@
-# Flask Imports 
 from flask import Flask, session, request
 from flask_session import Session 
-# Manipulation Imports
-import EXCEL_MANIPULATION, CSV_MANIPULATION 
 
+# Custom module imports (assuming they are custom modules)
+import EXCEL_MANIPULATION
+import CSV_MANIPULATION 
 
-# SESSION LIKE EXPRESS_SESSION,
-# IT HELPS TO SEPRATE USERS SESSIONS
+# Initialize the Flask app
 app = Flask(__name__)
+
+# Configure the session to use the filesystem
 app.config['SESSION_TYPE'] = 'filesystem' 
 app.secret_key = 'AVENGEAI-FLASK-SESSION'
-Session(app)    
 
-@app.route('/', methods=['GET'])
+# Initialize the session
+Session(app)
+
+# Define routes and logic here
+@app.route('/')
 def index():
     return 'Hello, World!'
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -23,7 +28,7 @@ def predict():
 @app.route('/uploadFile', methods=['POST'])
 def uploadFile():
     file = request.files['file']
-    if(file.filename.endswith('.xlsx') or file.filename.endswith('.xls')): # Check if the file is an excel file
+    if(file.filename.endswith('.xlsx') ): # Check if the file is an excel file
         openedFile =  EXCEL_MANIPULATION.EXCEL_MANIPULATION(file)
         return ({'message': 'File uploaded successfully!' , "data" : openedFile.getData()})
     elif(file.filename.endswith('.csv')):

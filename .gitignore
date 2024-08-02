@@ -1,2 +1,6 @@
-flask_session/
+flask_session/*
 uploads/*
+intermediate/*
+__pycache__/*
+cleanedCSV/*
+*.pyc

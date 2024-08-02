@@ -321,7 +321,7 @@ def convert_to_numeric(path, columns,code):
 def save_dataframe_to_csv(df, code):
     try:
         # Save the DataFrame to 'clean.csv'
-        df.to_csv('./intermediates/'+code+'_clean.csv', index=False)
+        df.to_csv('./cleanedCSV/'+code+'_clean.csv', index=False)
         return "File 'clean.csv' has been successfully created."
     except Exception as e:
         return f"An error occurred while creating the file 'clean.csv': {e}"

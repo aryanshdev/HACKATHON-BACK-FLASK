@@ -147,9 +147,11 @@ def check_missing_values(path):
     # Calculate number of missing values and percentage for each column
     missing_counts = df.isna().sum()
     missing_percentages = (missing_counts / len(df)) * 100
+    column_dtypes = df.dtypes
 
     # Create a DataFrame with the results
     missing_summary = pd.DataFrame({
+        'Column Name': missing_counts.index,
         'Missing Values': missing_counts,
         'Percentage': missing_percentages
     })

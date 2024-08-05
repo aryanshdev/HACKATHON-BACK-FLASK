@@ -120,11 +120,12 @@ def read_target_var_label_enc_status(code=""):
     
 
 
-def split_and_save_data(path, train_size_percentage, file_path='target_var_label_enc_status.pickle',code=''):
+def split_and_save_data(path, train_size_percentage,code=''):
     data= None
     status="err"
-    file_path=f"intermediate/{code}_target_var_label_enc_status.pickle"
-    target_column=read_target_var_label_enc_status(code)[0][1]
+    file_path=f"intermediate/{code}_target_var_label_enc_status.pickle"[0][1]
+    print(file_path)
+    target_column=read_target_var_label_enc_status(file_path)
     print(target_column)
     train_size_percentage=int(train_size_percentage)
     if not 0 < train_size_percentage < 100:

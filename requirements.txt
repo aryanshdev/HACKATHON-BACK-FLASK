@@ -1,5 +1,7 @@
 flask
-csv
 Flask-Session
 pandas
 openpyxl
+xgboost
+scikit-learn
+numpy

@@ -40,7 +40,7 @@ def save_target_variable(path,target_column,code=""):
         with open(file_name, 'wb') as file:
             pickle.dump(target_column, file)
         
-        message = f"Target column name '{target_column}' has been successfully saved to '{file_name}'."
+        message = f"Column '{target_column}' Saved as Target Successfully."
         status = "succ"
         result = {
             'data': data,
@@ -49,7 +49,7 @@ def save_target_variable(path,target_column,code=""):
         }
         return result
     except Exception as e:
-        message = f"An error occurred while saving the target column name: {e}"
+        message = f"An error occurred while saving the target column name"
         status = "err"
         result = {
             'data': data,
@@ -86,7 +86,7 @@ def update_encoder_status(str_val,code=""):
             pickle.dump((encoder_status, target_column_name), file)
         
         status = "succ"
-        message = f"Encoder status '{encoder_status}' and target column name have been successfully saved to 'target_var_label_enc_status.pickle'."
+        message = f"Encoder status has been successfully saved."
         result = {
             'data': data,
             'message': message,
@@ -123,19 +123,11 @@ def read_target_var_label_enc_status(code=""):
 def split_and_save_data(path, train_size_percentage,code=''):
     data= None
     status="err"
-    file_path=f"intermediate/{code}_target_var_label_enc_status.pickle"[0][1]
+    file_path=f"intermediate/{code}_target_var_label_enc_status.pickle"
     print(file_path)
-    target_column=read_target_var_label_enc_status(file_path)
+    target_column=read_target_var_label_enc_status(code)[0][1]
     print(target_column)
     train_size_percentage=int(train_size_percentage)
-    if not 0 < train_size_percentage < 100:
-        message="Error: Training size percentage must be between 0 and 100."
-        result = {
-        'data': data,
-        'message': message,
-        'status':status
-        }
-        return result
     df = pd.read_csv(path)
     try:
         # Separate features and target
@@ -162,15 +154,17 @@ def split_and_save_data(path, train_size_percentage,code=''):
         
 
         status="succ"
-        message="Data has been successfully split and saved to CSV files."
+        message="Data has been successfully split."
         result = {
         'data': data,
         'message': message,
         'status':status
         }
+        print(status)
         return result
 
     except Exception as e:
+        print(e)
         status="err"
         message=f"An error occurred: {e}"
         result = {
@@ -189,7 +183,7 @@ def random_forest(target,enco_status,df_train,df_test,n_estimators,max_depth,min
         max_depth=None
     min_samples_split=int(min_samples_split)
 
-    status = "success"
+    status = "succ"
     message = ""
     data = None
     try:
@@ -238,11 +232,10 @@ def random_forest(target,enco_status,df_train,df_test,n_estimators,max_depth,min
             os.makedirs('output', exist_ok=True)
             joblib.dump(rl_clf, model_filename)
             message = f"Trained model saved as {model_filename}"
-        
         return {
             'data': {
-                'train_accuracy': train_accuracy,
-                'test_accuracy': test_accuracy
+                'train_accuracy': round(train_accuracy*100, 5),
+                'test_accuracy': round(test_accuracy*100, 5)
             },
             'status': status,
             'message': message
@@ -262,7 +255,7 @@ def xgboost(target,enco_status,df_train,df_test,n_estimators,max_depth,learning_
     max_depth=int(max_depth)
     learning_rate=float(learning_rate)
 
-    status = "success"
+    status = "succ"
     message = ""
     data = None
     try:
@@ -272,8 +265,8 @@ def xgboost(target,enco_status,df_train,df_test,n_estimators,max_depth,learning_
             X_test = df_test.drop(columns=[target])
             y_test = df_test[target]
 
-            xg_clf = xgboost.XGBClassifier(n_estimators=n_estimators, max_depth=max_depth, learning_rate=learning_rate)
-            model.fit(X_train, y_train)
+            xg_clf = xgb.XGBClassifier(n_estimators=n_estimators, max_depth=max_depth, learning_rate=learning_rate)
+            xg_clf.fit(X_train, y_train)
 
             y_train_pred = model.predict(X_train)
             y_test_pred = model.predict(X_test)
@@ -319,8 +312,8 @@ def xgboost(target,enco_status,df_train,df_test,n_estimators,max_depth,learning_
 
         return {
             'data': {
-                'train_accuracy': train_accuracy,
-                'test_accuracy': test_accuracy
+                'train_accuracy': round(train_accuracy*100, 5),
+                'test_accuracy': round(test_accuracy*100, 5)
             },
             'status': status,
             'message': message
@@ -340,7 +333,7 @@ def bagging(target,enco_status,df_train,df_test,n_estimators,max_samples,max_fea
     max_samples=int(max_samples)
     max_features=float(max_features)
 
-    status = "success"
+    status = "succ"
     message = ""
     data = None
     try:
@@ -399,8 +392,8 @@ def bagging(target,enco_status,df_train,df_test,n_estimators,max_samples,max_fea
             message = f"Trained model saved as {model_filename}"
         return {
             'data': {
-                'train_accuracy': train_accuracy,
-                'test_accuracy': test_accuracy
+                'train_accuracy': round(train_accuracy*100, 5),
+                'test_accuracy': round(test_accuracy*100, 5)
             },
             'status': status,
             'message': message
@@ -421,7 +414,7 @@ def svm(target,enco_status,df_train,df_test,kernel,c,gamma,code=""):
     gamma=float(gamma)
     kernel=kernel
 
-    status = "success"
+    status = "succ"
     message = ""
     data = None
     try:
@@ -473,8 +466,8 @@ def svm(target,enco_status,df_train,df_test,kernel,c,gamma,code=""):
         
         return {
             'data': {
-                'train_accuracy': train_accuracy,
-                'test_accuracy': test_accuracy
+                'train_accuracy': round(train_accuracy*100, 5),
+                'test_accuracy': round(test_accuracy*100, 5)
             },
             'status': status,
             'message': message
@@ -493,7 +486,7 @@ def decision_tree(target,enco_status,df_train,df_test,max_depth,min_samples_spli
     max_depth=int(max_depth)
     min_samples_split=int(min_samples_split)
 
-    status = "success"
+    status = "succ"
     message = ""
     data = None
     try:
@@ -545,8 +538,8 @@ def decision_tree(target,enco_status,df_train,df_test,max_depth,min_samples_spli
         
         return {
             'data': {
-                'train_accuracy': train_accuracy,
-                'test_accuracy': test_accuracy
+                'train_accuracy': round(train_accuracy*100, 5),
+                'test_accuracy': round(test_accuracy*100, 5)
             },
             'status': status,
             'message': message
@@ -574,6 +567,7 @@ def model(model_name,param1,param2,param3,code=''):
     # enco_status is a string
 
     if model_name == 'random_forest':
+        print("Random Forest")
         response = random_forest(target,enco_status,df_train,df_test,param1,param2,param3,code)
     elif model_name == 'xgboost':
        response = xgboost(target,enco_status,df_train,df_test,param1,param2,param3,code)
@@ -585,7 +579,7 @@ def model(model_name,param1,param2,param3,code=''):
         response = decision_tree(target,enco_status,df_train, df_test,param1,param2,param3,code)
     else:
         raise ValueError(f"Unknown model code: {model_name}")
-
+    print(response)
     return response
 
 

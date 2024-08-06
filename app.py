@@ -34,15 +34,23 @@ def upload_file():
     file = flask.request.files['uploadFile']
     code = flask.request.form['code']
     if (file.filename.endswith('.csv')):
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'], file.filename), code)
-        return {"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'], file.filename)).getData(), "code": code}
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]))
+        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]), code)
+        return flask.jsonify({"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1])).getData()})
     elif (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], file.filename))
-        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'], file.filename), code)
-        return {"data": EXCEL_MANIPULATION.EXCEL_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'], file.filename)).getData(), "code": code}
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]))
+        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]), code)
+        return flask.jsonify({"data": EXCEL_MANIPULATION.EXCEL_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1])).getData()})
 
 
+@app.route('/getDatasetDisplay', methods=['POST'])
+def getDatasetDisplay():
+    code = flask.request.form['code']
+    if os.path.exists(os.path.join(app.config['CLEANED_CSV'], code+"_clean.csv")):
+        return flask.jsonify({"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['CLEANED_CSV'], code+"_clean.csv")).getData()})
+    else:
+        return flask.jsonify({"data": "No file found"})
+    
 @app.route('/deleteFile', methods=['DELETE'])
 def deleteFile():
     code = flask.request.form['code']
@@ -160,3 +168,12 @@ def setEncoder():
 @app.route('/setTarget', methods=['POST'])
 def saveTarget():
     return algorithm.save_target_variable(app.config['CLEANED_CSV']+flask.request.form['code']+"_clean.csv", flask.request.form['targetValue'], flask.request.form['code'])
+
+# FILE DDOWNLOAD SYSTEM
+
+@app.route('/filesAvailable', methods=['POST'])
+def filesAvailable():
+    code = flask.request.form['code']
+    response={}
+    response["svm"] = os.path.join('output/', code+"_svm.pkl") if os.path.exists(os.path.join('output/', code+"_svm.pkl")) else None
+    response["svm"] = os.path.join('output/', code+"_svm.pkl") if os.path.exists(os.path.join('output/', code+"_svm.pkl")) else None

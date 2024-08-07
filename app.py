@@ -34,13 +34,17 @@ def upload_file():
     file = flask.request.files['uploadFile']
     code = flask.request.form['code']
     if (file.filename.endswith('.csv')):
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]))
-        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]), code)
-        return flask.jsonify({"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1])).getData()})
+        file.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1]))
+        clean.createDataFrame(os.path.join(
+            app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1]), code)
+        return flask.jsonify({"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1])).getData()})
     elif (file.filename.endswith('.xlsx') or file.filename.endswith('.xls')):
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]))
-        clean.createDataFrame(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1]), code)
-        return flask.jsonify({"data": EXCEL_MANIPULATION.EXCEL_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'],code + '.'+ file.filename.split('.')[-1])).getData()})
+        file.save(os.path.join(
+            app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1]))
+        clean.createDataFrame(os.path.join(
+            app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1]), code)
+        return flask.jsonify({"data": EXCEL_MANIPULATION.EXCEL_MANIPULATION(os.path.join(app.config['UPLOAD_FOLDER'], code + '.' + file.filename.split('.')[-1])).getData()})
 
 
 @app.route('/getDatasetDisplay', methods=['POST'])
@@ -50,7 +54,8 @@ def getDatasetDisplay():
         return flask.jsonify({"data": CSV_MANIPULATION.CSV_MANIPULATION(os.path.join(app.config['CLEANED_CSV'], code+"_clean.csv")).getData()})
     else:
         return flask.jsonify({"data": "No file found"})
-    
+
+
 @app.route('/deleteFile', methods=['DELETE'])
 def deleteFile():
     code = flask.request.form['code']
@@ -58,7 +63,6 @@ def deleteFile():
         app.config['CLEANED_CSV'], code+"_clean.csv"))
     return ({'message': 'File deleted successfully!'})
 
-   
 
 # Below are the routes for the cleaning operations With Thier Maping with Clean.py Funtions
 
@@ -171,9 +175,36 @@ def saveTarget():
 
 # FILE DDOWNLOAD SYSTEM
 
-@app.route('/filesAvailable', methods=['POST'])
+
+@app.route('/getDownloads', methods=['POST'])
 def filesAvailable():
     code = flask.request.form['code']
-    response={}
-    response["svm"] = os.path.join('output/', code+"_svm.pkl") if os.path.exists(os.path.join('output/', code+"_svm.pkl")) else None
-    response["svm"] = os.path.join('output/', code+"_svm.pkl") if os.path.exists(os.path.join('output/', code+"_svm.pkl")) else None
+    response = {"cleanedCSV": os.path.join(
+        os.getcwd(), app.config['CLEANED_CSV'], code+"_clean.csv")}
+    response["svm"] = os.path.join(os.getcwd(), 'output/', code+"_svm.pkl") if os.path.exists(
+        os.path.join('output/', code+"_svm.pkl")) else None
+    response["bagging"] = os.path.join(os.getcwd(), 'output/', code+"_bagging_model.pkl") if os.path.exists(
+        os.path.join('output/', code+"_bagging_model.pkl")) else None
+    response["random_forest"] = os.path.join(os.getcwd(), 'output/', code+"_random_forest.pkl") if os.path.exists(
+        os.path.join('output/', code+"_random_forest.pkl")) else None
+    response["xgboost"] = os.path.join(os.getcwd(), 'output/', code+"_xgboost.pkl") if os.path.exists(
+        os.path.join('output/', code+"_xgboost.pkl")) else None
+    response["decision_tree"] = os.path.join(os.getcwd(), 'output/', code+"_decision_tree.pkl") if os.path.exists(
+        os.path.join('output/', code+"_decision_tree.pkl")) else None
+    return flask.jsonify(response)
+
+@app.route('/closeSession', methods=['DELETE'])
+def closeSession():
+    code = flask.request.form['code']
+    os.remove(os.path.join(app.config['CLEANED_CSV'], code+"_clean.csv"))
+    if os.path.exists(os.path.join('output/', code+"_svm.pkl")):
+        os.remove(os.path.join('output/', code+"_svm.pkl"))
+    if os.path.exists(os.path.join('output/', code+"_random_forest.pkl")):
+        os.remove(os.path.join('output/', code+"_random_forest.pkl"))
+    if os.path.exists(os.path.join('output/', code+"_xgboost.pkl")):
+        os.remove(os.path.join('output/', code+"_xgboost.pkl"))
+    if os.path.exists(os.path.join('output/', code+"_decision_tree.pkl")):
+        os.remove(os.path.join('output/', code+"_decision_tree.pkl"))
+    if os.path.exists(os.path.join('output/', code+"_bagging_model.pkl")):
+        os.remove(os.path.join('output/', code+"_bagging_model.pkl"))
+    return flask.jsonify({"message": "Session Closed"})

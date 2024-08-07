@@ -207,7 +207,7 @@ def random_forest(target,enco_status,df_train,df_test,n_estimators,max_depth,min
             model_filename = f"output/{code}_random_forest.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(rf_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = " Random Forest Model Trained Successfully"
             
 
         else:
@@ -231,7 +231,7 @@ def random_forest(target,enco_status,df_train,df_test,n_estimators,max_depth,min
             model_filename = f"output/{code}_enco_random_forest.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(rl_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "Random Forest Model Trained Successfully"
         return {
             'data': {
                 'train_accuracy': round(train_accuracy*100, 5),
@@ -280,7 +280,7 @@ def xgboost(target,enco_status,df_train,df_test,n_estimators,max_depth,learning_
             model_filename = f"output/{code}_xgboost_model.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(xg_clf, model_filename)
-            message=f"Trained model saved as {model_filename}"
+            message="XGBoost Model Trained Successfully"
 
         else:
             le = LabelEncoder()
@@ -308,7 +308,7 @@ def xgboost(target,enco_status,df_train,df_test,n_estimators,max_depth,learning_
             model_filename = f"output/{code}_enco_xgboost_model.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(xg_clf, model_filename)
-            message=f"Trained model saved as {model_filename}"
+            message="XGBoost Model Trained Successfully"
 
         return {
             'data': {
@@ -360,7 +360,7 @@ def bagging(target,enco_status,df_train,df_test,n_estimators,max_samples,max_fea
             model_filename = f"output/{code}_bagging_model.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(bag_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "Bagging Model Trained Successfully"
 
         else:
             le = LabelEncoder()
@@ -389,7 +389,7 @@ def bagging(target,enco_status,df_train,df_test,n_estimators,max_samples,max_fea
             model_filename = f"output/{code}_enco_bagging_model.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(bag_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "Bagging Model Trained Successfully"
         return {
             'data': {
                 'train_accuracy': round(train_accuracy*100, 5),
@@ -438,7 +438,7 @@ def svm(target,enco_status,df_train,df_test,kernel,c,gamma,code=""):
             model_filename = f"output/{code}_svm.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(svm_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "SVM Model Trained Successfully"
             
 
         else:
@@ -462,7 +462,7 @@ def svm(target,enco_status,df_train,df_test,kernel,c,gamma,code=""):
             model_filename = f"output/{code}_enco_svm.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(svm_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "SVM Model Trained Successfully"
         
         return {
             'data': {
@@ -510,7 +510,7 @@ def decision_tree(target,enco_status,df_train,df_test,max_depth,min_samples_spli
             model_filename = f"output/{code}_decision_tree.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(svm_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "Decision Tree Model Trained Successfully"
             
 
         else:
@@ -534,13 +534,14 @@ def decision_tree(target,enco_status,df_train,df_test,max_depth,min_samples_spli
             model_filename = f"output/{code}_enco_decision_tree.pkl"
             os.makedirs('output', exist_ok=True)
             joblib.dump(svm_clf, model_filename)
-            message = f"Trained model saved as {model_filename}"
+            message = "Decision Tree Model Trained Successfully"
         
         return {
             'data': {
                 'train_accuracy': round(train_accuracy*100, 5),
                 'test_accuracy': round(test_accuracy*100, 5)
             },
+            "type" : criterion,
             'status': status,
             'message': message
         }
